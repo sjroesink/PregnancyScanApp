@@ -1,0 +1,82 @@
+workflows:
+  ios-build:
+    name: iOS Build
+    max_build_duration: 120
+    instance_type: mac_mini_m2
+    environment:
+      xcode: latest
+      vars:
+        XCODE_PROJECT: "PregnancyScanApp.xcodeproj"
+        XCODE_SCHEME: "PregnancyScanApp"
+        BUNDLE_ID: "com.sjroesink.PregnancyScanApp"
+    scripts:
+      - name: Install XcodeGen
+        script: |
+          brew install xcodegen
+
+      - name: Generate Xcode project
+        script: |
+          cd $CM_BUILD_DIR
+          xcodegen generate
+
+      - name: Build for simulator (no signing)
+        script: |
+          cd $CM_BUILD_DIR
+          xcodebuild build \
+            -project "$XCODE_PROJECT" \
+            -scheme "$XCODE_SCHEME" \
+            -sdk iphonesimulator \
+            -destination 'platform=iOS Simulator,name=iPhone 15 Pro,OS=latest' \
+            -configuration Debug \
+            CODE_SIGNING_ALLOWED=NO \
+            | xcpretty
+
+    artifacts:
+      - /tmp/xcodebuild_logs/*.log
+      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.app
+
+  ios-release:
+    name: iOS Release
+    max_build_duration: 120
+    instance_type: mac_mini_m2
+    integrations:
+      app_store_connect: codemagic
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.sjroesink.PregnancyScanApp
+      xcode: latest
+      vars:
+        XCODE_PROJECT: "PregnancyScanApp.xcodeproj"
+        XCODE_SCHEME: "PregnancyScanApp"
+        BUNDLE_ID: "com.sjroesink.PregnancyScanApp"
+    scripts:
+      - name: Install XcodeGen
+        script: |
+          brew install xcodegen
+
+      - name: Generate Xcode project
+        script: |
+          cd $CM_BUILD_DIR
+          xcodegen generate
+
+      - name: Set up code signing
+        script: |
+          xcode-project use-profiles
+
+      - name: Build ipa for distribution
+        script: |
+          cd $CM_BUILD_DIR
+          xcode-project build-ipa \
+            --project "$XCODE_PROJECT" \
+            --scheme "$XCODE_SCHEME"
+
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
