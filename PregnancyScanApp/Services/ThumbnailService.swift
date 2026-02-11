@@ -1,5 +1,6 @@
 import SceneKit
 import ModelIO
+import SceneKit.ModelIO
 import UIKit
 
 final class ThumbnailService {
@@ -11,7 +12,12 @@ final class ThumbnailService {
         let mdlAsset = MDLAsset(url: modelURL)
         mdlAsset.loadTextures()
 
-        let scene = SCNScene(mdlAsset: mdlAsset)
+        let scene = SCNScene()
+        for i in 0..<mdlAsset.count {
+            let mdlObject = mdlAsset.object(at: i)
+            let scnNode = SCNNode(mdlObject: mdlObject)
+            scene.rootNode.addChildNode(scnNode)
+        }
 
         let scnView = SCNView(frame: CGRect(origin: .zero, size: size))
         scnView.scene = scene

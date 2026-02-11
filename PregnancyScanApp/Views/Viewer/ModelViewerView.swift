@@ -69,9 +69,13 @@ struct ModelViewerView: View {
             }
 
             if let date = viewModel.scanDate {
-                Label(date, format: .dateTime.month().day().year(), systemImage: "calendar")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                Label {
+                    Text(date, format: .dateTime.month().day().year())
+                } icon: {
+                    Image(systemName: "calendar")
+                }
+                .font(.caption)
+                .foregroundStyle(.secondary)
             }
 
             Spacer()

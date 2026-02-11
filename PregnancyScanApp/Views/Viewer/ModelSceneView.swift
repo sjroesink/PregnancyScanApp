@@ -1,6 +1,7 @@
 import SwiftUI
 import SceneKit
 import ModelIO
+import SceneKit.ModelIO
 
 struct ModelSceneView: UIViewRepresentable {
 
@@ -24,7 +25,12 @@ struct ModelSceneView: UIViewRepresentable {
         let mdlAsset = MDLAsset(url: modelURL)
         mdlAsset.loadTextures()
 
-        let scene = SCNScene(mdlAsset: mdlAsset)
+        let scene = SCNScene()
+        for i in 0..<mdlAsset.count {
+            let mdlObject = mdlAsset.object(at: i)
+            let scnNode = SCNNode(mdlObject: mdlObject)
+            scene.rootNode.addChildNode(scnNode)
+        }
 
         // Center and scale the model
         let (minBound, maxBound) = scene.rootNode.boundingBox
