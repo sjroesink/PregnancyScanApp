@@ -1,3 +1,4 @@
+#if ENABLE_OBJECT_CAPTURE
 import SwiftUI
 import SwiftData
 
@@ -150,3 +151,4 @@ struct ReconstructionView: View {
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 }
+#endif

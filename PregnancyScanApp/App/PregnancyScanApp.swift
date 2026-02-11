@@ -17,9 +17,17 @@ struct PregnancyScanApp: App {
                         case .preparation:
                             ScanPreparationView()
                         case .capturing(let scanID):
+                            #if ENABLE_OBJECT_CAPTURE
                             CaptureContainerView(scanRecordID: scanID)
+                            #else
+                            Text("Object Capture not available in this build")
+                            #endif
                         case .reconstruction(let scanID):
+                            #if ENABLE_OBJECT_CAPTURE
                             ReconstructionView(scanRecordID: scanID)
+                            #else
+                            Text("Reconstruction not available in this build")
+                            #endif
                         case .viewing(let scanID):
                             ModelViewerView(scanRecordID: scanID)
                         case .export(let scanID):

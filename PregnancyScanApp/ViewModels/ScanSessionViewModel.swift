@@ -1,3 +1,4 @@
+#if ENABLE_OBJECT_CAPTURE
 import SwiftUI
 import SwiftData
 import RealityKit
@@ -129,3 +130,4 @@ final class ScanSessionViewModel {
         scanRecord?.status = .failed
     }
 }
+#endif

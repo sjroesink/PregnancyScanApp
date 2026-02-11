@@ -1,3 +1,4 @@
+#if ENABLE_OBJECT_CAPTURE
 import SwiftUI
 
 @available(iOS 17.0, *)
@@ -47,3 +48,4 @@ struct CaptureGuidanceView: View {
         }
     }
 }
+#endif

@@ -1,3 +1,4 @@
+#if ENABLE_OBJECT_CAPTURE
 import SwiftUI
 import RealityKit
 
@@ -26,3 +27,4 @@ struct PointCloudPreviewView: View {
         }
     }
 }
+#endif
