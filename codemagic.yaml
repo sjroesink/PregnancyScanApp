@@ -28,12 +28,14 @@ workflows:
             -sdk iphonesimulator \
             -destination 'platform=iOS Simulator,name=iPhone 15 Pro,OS=latest' \
             -configuration Debug \
+            -derivedDataPath $CM_BUILD_DIR/build \
             CODE_SIGNING_ALLOWED=NO \
             | xcpretty
 
     artifacts:
+      - build/Build/Products/**/*.app
       - /tmp/xcodebuild_logs/*.log
-      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.app
+      - build/Logs/Build/*.xcresult
 
   ios-release:
     name: iOS Release
