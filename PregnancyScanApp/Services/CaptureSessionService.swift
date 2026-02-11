@@ -2,6 +2,7 @@ import RealityKit
 import ARKit
 import Combine
 
+@available(iOS 17.0, *)
 @Observable
 @MainActor
 final class CaptureSessionService {
@@ -36,9 +37,7 @@ final class CaptureSessionService {
 
     // MARK: - State
 
-    #if ENABLE_OBJECT_CAPTURE
     private(set) var objectCaptureSession: ObjectCaptureSession?
-    #endif
     private(set) var currentScanHeight: ScanHeight = .low
     private(set) var completedPasses: Set<ScanHeight> = []
     private(set) var numberOfShotsTaken: Int = 0
@@ -68,7 +67,6 @@ final class CaptureSessionService {
     // MARK: - Session Lifecycle
 
     func startSession(imagesDirectory: URL, snapshotsDirectory: URL) throws {
-        #if ENABLE_OBJECT_CAPTURE
         guard ObjectCaptureSession.isSupported else {
             throw CaptureError.deviceNotSupported
         }
@@ -91,66 +89,48 @@ final class CaptureSessionService {
 
         observeState()
         observeFeedback()
-        #else
-        throw CaptureError.deviceNotSupported
-        #endif
     }
 
     func startDetecting() {
-        #if ENABLE_OBJECT_CAPTURE
         objectCaptureSession?.startDetecting()
-        #endif
     }
 
     func startCapturing() {
-        #if ENABLE_OBJECT_CAPTURE
         objectCaptureSession?.startCapturing()
-        #endif
     }
 
     func beginNextPass() {
         completedPasses.insert(currentScanHeight)
 
         if let nextHeight = ScanHeight(rawValue: currentScanHeight.rawValue + 1) {
-            #if ENABLE_OBJECT_CAPTURE
             objectCaptureSession?.beginNewScanPass()
-            #endif
             currentScanHeight = nextHeight
         }
     }
 
     func finishCapture() {
         completedPasses.insert(currentScanHeight)
-        #if ENABLE_OBJECT_CAPTURE
         objectCaptureSession?.finish()
-        #endif
     }
 
     func pauseCapture() {
-        #if ENABLE_OBJECT_CAPTURE
         objectCaptureSession?.pause()
-        #endif
         isPaused = true
     }
 
     func resumeCapture() {
-        #if ENABLE_OBJECT_CAPTURE
         objectCaptureSession?.resume()
-        #endif
         isPaused = false
     }
 
     func cancelSession() {
-        #if ENABLE_OBJECT_CAPTURE
         objectCaptureSession?.cancel()
-        #endif
         cleanup()
     }
 
     // MARK: - Observation
 
     private func observeState() {
-        #if ENABLE_OBJECT_CAPTURE
         stateObservationTask?.cancel()
         stateObservationTask = Task { [weak self] in
             guard let session = self?.objectCaptureSession else { return }
@@ -159,11 +139,9 @@ final class CaptureSessionService {
                 await self?.handleStateUpdate(newState)
             }
         }
-        #endif
     }
 
     private func observeFeedback() {
-        #if ENABLE_OBJECT_CAPTURE
         feedbackObservationTask?.cancel()
         feedbackObservationTask = Task { [weak self] in
             guard let session = self?.objectCaptureSession else { return }
@@ -172,10 +150,8 @@ final class CaptureSessionService {
                 await self?.handleFeedback(feedback)
             }
         }
-        #endif
     }
 
-    #if ENABLE_OBJECT_CAPTURE
     private func handleStateUpdate(_ state: ObjectCaptureSession.CaptureState) {
         switch state {
         case .ready:
@@ -217,16 +193,13 @@ final class CaptureSessionService {
             numberOfShotsTaken = session.numberOfShotsTaken
         }
     }
-    #endif
 
     private func cleanup() {
         stateObservationTask?.cancel()
         feedbackObservationTask?.cancel()
         stateObservationTask = nil
         feedbackObservationTask = nil
-        #if ENABLE_OBJECT_CAPTURE
         objectCaptureSession = nil
-        #endif
         isPaused = false
     }
 

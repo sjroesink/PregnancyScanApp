@@ -2,6 +2,7 @@ import SwiftUI
 import RealityKit
 import SwiftData
 
+@available(iOS 17.0, *)
 struct CaptureContainerView: View {
 
     let scanRecordID: UUID
@@ -13,15 +14,11 @@ struct CaptureContainerView: View {
 
     var body: some View {
         ZStack {
-            #if ENABLE_OBJECT_CAPTURE
             if let session = viewModel.session {
                 captureSessionView(session: session)
             } else {
                 startingView
             }
-            #else
-            placeholderView
-            #endif
 
             if viewModel.isCountingDown {
                 countdownOverlay
@@ -64,7 +61,6 @@ struct CaptureContainerView: View {
 
     // MARK: - Subviews
 
-    #if ENABLE_OBJECT_CAPTURE
     @ViewBuilder
     private func captureSessionView(session: ObjectCaptureSession) -> some View {
         ZStack {
@@ -104,23 +100,6 @@ struct CaptureContainerView: View {
             .padding(.trailing, 16)
         }
         .ignoresSafeArea()
-    }
-    #endif
-
-    private var placeholderView: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "camera.viewfinder")
-                .font(.system(size: 48))
-                .foregroundStyle(.secondary)
-            Text("Object Capture is not available in this build.")
-                .font(.headline)
-                .foregroundStyle(.secondary)
-            Text("Run on a physical device with LiDAR to capture 3D scans.")
-                .font(.subheadline)
-                .foregroundStyle(.tertiary)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, 32)
-        }
     }
 
     private var startingView: some View {

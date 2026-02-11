@@ -1,5 +1,6 @@
 import SwiftUI
 
+@available(iOS 17.0, *)
 struct ScanPassIndicatorView: View {
 
     let currentHeight: CaptureSessionService.ScanHeight

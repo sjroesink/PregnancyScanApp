@@ -1,7 +1,7 @@
 import SwiftUI
 import RealityKit
 
-#if ENABLE_OBJECT_CAPTURE
+@available(iOS 17.0, *)
 struct PointCloudPreviewView: View {
 
     let session: ObjectCaptureSession
@@ -26,4 +26,3 @@ struct PointCloudPreviewView: View {
         }
     }
 }
-#endif

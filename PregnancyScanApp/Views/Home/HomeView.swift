@@ -1,6 +1,7 @@
 import SwiftUI
 import SwiftData
 
+@available(iOS 17.0, *)
 struct HomeView: View {
 
     @Environment(AppState.self) private var appState

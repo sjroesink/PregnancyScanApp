@@ -1,6 +1,7 @@
 import ARKit
 import RealityKit
 
+@available(iOS 17.0, *)
 enum DeviceCapabilityChecker {
 
     struct CapabilityResult {
@@ -18,16 +19,10 @@ enum DeviceCapabilityChecker {
             missing.append("LiDAR Scanner")
         }
 
-        let supportsObjectCapture: Bool
-        #if ENABLE_OBJECT_CAPTURE
-        supportsObjectCapture = ObjectCaptureSession.isSupported
+        let supportsObjectCapture = ObjectCaptureSession.isSupported
         if !supportsObjectCapture {
             missing.append("Object Capture")
         }
-        #else
-        supportsObjectCapture = false
-        missing.append("Object Capture not included in this build")
-        #endif
 
         let isSupported = hasLiDAR && supportsObjectCapture
 

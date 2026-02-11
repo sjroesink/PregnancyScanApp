@@ -47,11 +47,10 @@ targets:
       configs:
         Debug:
           SWIFT_OPTIMIZATION_LEVEL: -Onone
-          SWIFT_ACTIVE_COMPILATION_CONDITIONS: "DEBUG ENABLE_OBJECT_CAPTURE"
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS: DEBUG
         Release:
           SWIFT_OPTIMIZATION_LEVEL: -Osize
           SWIFT_COMPILATION_MODE: wholemodule
-          SWIFT_ACTIVE_COMPILATION_CONDITIONS: ENABLE_OBJECT_CAPTURE
 
     dependencies:
       - sdk: RealityKit.framework

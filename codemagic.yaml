@@ -11,7 +11,7 @@ workflows:
           include: true
       cancel_previous_builds: true
     environment:
-      xcode: latest
+      xcode: 15.2
       vars:
         XCODE_PROJECT: "PregnancyScanApp.xcodeproj"
         XCODE_SCHEME: "PregnancyScanApp"
@@ -46,7 +46,6 @@ workflows:
             -derivedDataPath $CM_BUILD_DIR/build \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGN_IDENTITY="" \
-            SWIFT_ACTIVE_COMPILATION_CONDITIONS='DEBUG' \
             | xcpretty
 
       - name: Package as unsigned IPA

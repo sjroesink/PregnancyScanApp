@@ -1,6 +1,7 @@
 import RealityKit
 import Foundation
 
+@available(iOS 17.0, *)
 @Observable
 @MainActor
 final class ReconstructionService {
@@ -15,12 +16,12 @@ final class ReconstructionService {
     private var processingTask: Task<Void, Never>?
 
     enum ReconstructionError: LocalizedError {
-        case notSupportedInThisBuild
+        case reconstructionFailed
 
         var errorDescription: String? {
             switch self {
-            case .notSupportedInThisBuild:
-                return "3D reconstruction is not available in this build. Run on a physical device."
+            case .reconstructionFailed:
+                return "3D reconstruction failed."
             }
         }
     }
@@ -30,7 +31,6 @@ final class ReconstructionService {
         outputModelURL: URL,
         checkpointDirectory: URL?
     ) async throws {
-        #if ENABLE_OBJECT_CAPTURE
         isProcessing = true
         isComplete = false
         progress = 0.0
@@ -102,9 +102,6 @@ final class ReconstructionService {
                 break
             }
         }
-        #else
-        throw ReconstructionError.notSupportedInThisBuild
-        #endif
     }
 
     func cancel() {
