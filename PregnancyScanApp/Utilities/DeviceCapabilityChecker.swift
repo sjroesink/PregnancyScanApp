@@ -19,14 +19,14 @@ enum DeviceCapabilityChecker {
         }
 
         let supportsObjectCapture: Bool
-        #if targetEnvironment(simulator)
-        supportsObjectCapture = false
-        missing.append("Physical device required (simulator not supported)")
-        #else
+        #if ENABLE_OBJECT_CAPTURE
         supportsObjectCapture = ObjectCaptureSession.isSupported
         if !supportsObjectCapture {
             missing.append("Object Capture")
         }
+        #else
+        supportsObjectCapture = false
+        missing.append("Object Capture not included in this build")
         #endif
 
         let isSupported = hasLiDAR && supportsObjectCapture

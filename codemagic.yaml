@@ -11,7 +11,7 @@ workflows:
           include: true
       cancel_previous_builds: true
     environment:
-      xcode: 16.4
+      xcode: latest
       vars:
         XCODE_PROJECT: "PregnancyScanApp.xcodeproj"
         XCODE_SCHEME: "PregnancyScanApp"
@@ -28,6 +28,12 @@ workflows:
           cd $CM_BUILD_DIR
           xcodegen generate
 
+      - name: Show Xcode and SDK info
+        script: |
+          xcodebuild -version
+          xcodebuild -showsdks | grep iphoneos
+          xcrun --sdk iphoneos --show-sdk-path
+
       - name: Build unsigned .app for device
         script: |
           cd $CM_BUILD_DIR
@@ -40,6 +46,7 @@ workflows:
             -derivedDataPath $CM_BUILD_DIR/build \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGN_IDENTITY="" \
+            SWIFT_ACTIVE_COMPILATION_CONDITIONS='DEBUG ENABLE_OBJECT_CAPTURE' \
             | xcpretty
 
       - name: Package as unsigned IPA

@@ -1,7 +1,7 @@
 import SwiftUI
 import RealityKit
 
-#if !targetEnvironment(simulator)
+#if ENABLE_OBJECT_CAPTURE
 struct PointCloudPreviewView: View {
 
     let session: ObjectCaptureSession

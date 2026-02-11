@@ -13,14 +13,14 @@ struct CaptureContainerView: View {
 
     var body: some View {
         ZStack {
-            #if !targetEnvironment(simulator)
+            #if ENABLE_OBJECT_CAPTURE
             if let session = viewModel.session {
                 captureSessionView(session: session)
             } else {
                 startingView
             }
             #else
-            simulatorPlaceholderView
+            placeholderView
             #endif
 
             if viewModel.isCountingDown {
@@ -64,7 +64,7 @@ struct CaptureContainerView: View {
 
     // MARK: - Subviews
 
-    #if !targetEnvironment(simulator)
+    #if ENABLE_OBJECT_CAPTURE
     @ViewBuilder
     private func captureSessionView(session: ObjectCaptureSession) -> some View {
         ZStack {
@@ -107,12 +107,12 @@ struct CaptureContainerView: View {
     }
     #endif
 
-    private var simulatorPlaceholderView: some View {
+    private var placeholderView: some View {
         VStack(spacing: 16) {
             Image(systemName: "camera.viewfinder")
                 .font(.system(size: 48))
                 .foregroundStyle(.secondary)
-            Text("Object Capture is not available in the simulator.")
+            Text("Object Capture is not available in this build.")
                 .font(.headline)
                 .foregroundStyle(.secondary)
             Text("Run on a physical device with LiDAR to capture 3D scans.")

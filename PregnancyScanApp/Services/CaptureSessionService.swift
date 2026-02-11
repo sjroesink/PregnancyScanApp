@@ -36,7 +36,7 @@ final class CaptureSessionService {
 
     // MARK: - State
 
-    #if !targetEnvironment(simulator)
+    #if ENABLE_OBJECT_CAPTURE
     private(set) var objectCaptureSession: ObjectCaptureSession?
     #endif
     private(set) var currentScanHeight: ScanHeight = .low
@@ -68,7 +68,7 @@ final class CaptureSessionService {
     // MARK: - Session Lifecycle
 
     func startSession(imagesDirectory: URL, snapshotsDirectory: URL) throws {
-        #if !targetEnvironment(simulator)
+        #if ENABLE_OBJECT_CAPTURE
         guard ObjectCaptureSession.isSupported else {
             throw CaptureError.deviceNotSupported
         }
@@ -97,13 +97,13 @@ final class CaptureSessionService {
     }
 
     func startDetecting() {
-        #if !targetEnvironment(simulator)
+        #if ENABLE_OBJECT_CAPTURE
         objectCaptureSession?.startDetecting()
         #endif
     }
 
     func startCapturing() {
-        #if !targetEnvironment(simulator)
+        #if ENABLE_OBJECT_CAPTURE
         objectCaptureSession?.startCapturing()
         #endif
     }
@@ -112,7 +112,7 @@ final class CaptureSessionService {
         completedPasses.insert(currentScanHeight)
 
         if let nextHeight = ScanHeight(rawValue: currentScanHeight.rawValue + 1) {
-            #if !targetEnvironment(simulator)
+            #if ENABLE_OBJECT_CAPTURE
             objectCaptureSession?.beginNewScanPass()
             #endif
             currentScanHeight = nextHeight
@@ -121,27 +121,27 @@ final class CaptureSessionService {
 
     func finishCapture() {
         completedPasses.insert(currentScanHeight)
-        #if !targetEnvironment(simulator)
+        #if ENABLE_OBJECT_CAPTURE
         objectCaptureSession?.finish()
         #endif
     }
 
     func pauseCapture() {
-        #if !targetEnvironment(simulator)
+        #if ENABLE_OBJECT_CAPTURE
         objectCaptureSession?.pause()
         #endif
         isPaused = true
     }
 
     func resumeCapture() {
-        #if !targetEnvironment(simulator)
+        #if ENABLE_OBJECT_CAPTURE
         objectCaptureSession?.resume()
         #endif
         isPaused = false
     }
 
     func cancelSession() {
-        #if !targetEnvironment(simulator)
+        #if ENABLE_OBJECT_CAPTURE
         objectCaptureSession?.cancel()
         #endif
         cleanup()
@@ -150,7 +150,7 @@ final class CaptureSessionService {
     // MARK: - Observation
 
     private func observeState() {
-        #if !targetEnvironment(simulator)
+        #if ENABLE_OBJECT_CAPTURE
         stateObservationTask?.cancel()
         stateObservationTask = Task { [weak self] in
             guard let session = self?.objectCaptureSession else { return }
@@ -163,7 +163,7 @@ final class CaptureSessionService {
     }
 
     private func observeFeedback() {
-        #if !targetEnvironment(simulator)
+        #if ENABLE_OBJECT_CAPTURE
         feedbackObservationTask?.cancel()
         feedbackObservationTask = Task { [weak self] in
             guard let session = self?.objectCaptureSession else { return }
@@ -175,7 +175,7 @@ final class CaptureSessionService {
         #endif
     }
 
-    #if !targetEnvironment(simulator)
+    #if ENABLE_OBJECT_CAPTURE
     private func handleStateUpdate(_ state: ObjectCaptureSession.CaptureState) {
         switch state {
         case .ready:
@@ -224,12 +224,12 @@ final class CaptureSessionService {
         feedbackObservationTask?.cancel()
         stateObservationTask = nil
         feedbackObservationTask = nil
-        #if !targetEnvironment(simulator)
+        #if ENABLE_OBJECT_CAPTURE
         objectCaptureSession = nil
         #endif
         isPaused = false
     }
 
-    nonisolated deinit {
+    deinit {
     }
 }

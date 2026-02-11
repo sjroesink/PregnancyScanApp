@@ -15,12 +15,12 @@ final class ReconstructionService {
     private var processingTask: Task<Void, Never>?
 
     enum ReconstructionError: LocalizedError {
-        case notSupportedOnSimulator
+        case notSupportedInThisBuild
 
         var errorDescription: String? {
             switch self {
-            case .notSupportedOnSimulator:
-                return "3D reconstruction is not available in the simulator. Run on a physical device."
+            case .notSupportedInThisBuild:
+                return "3D reconstruction is not available in this build. Run on a physical device."
             }
         }
     }
@@ -30,9 +30,7 @@ final class ReconstructionService {
         outputModelURL: URL,
         checkpointDirectory: URL?
     ) async throws {
-        #if targetEnvironment(simulator)
-        throw ReconstructionError.notSupportedOnSimulator
-        #else
+        #if ENABLE_OBJECT_CAPTURE
         isProcessing = true
         isComplete = false
         progress = 0.0
@@ -104,6 +102,8 @@ final class ReconstructionService {
                 break
             }
         }
+        #else
+        throw ReconstructionError.notSupportedInThisBuild
         #endif
     }
 
