@@ -53,10 +53,8 @@ targets:
           SWIFT_COMPILATION_MODE: wholemodule
 
     dependencies:
-      - framework: RealityKit.framework
-        embed: false
-      - framework: ARKit.framework
-        embed: false
+      - sdk: RealityKit.framework
+      - sdk: ARKit.framework
       - sdk: ModelIO.framework
       - sdk: SceneKit.framework
       - sdk: QuickLook.framework
