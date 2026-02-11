@@ -28,31 +28,40 @@ workflows:
           cd $CM_BUILD_DIR
           xcodegen generate
 
-      - name: Build for simulator (no signing)
+      - name: Build unsigned .app for device
         script: |
           cd $CM_BUILD_DIR
           xcodebuild build \
             -project "$XCODE_PROJECT" \
             -scheme "$XCODE_SCHEME" \
-            -sdk iphonesimulator \
-            -destination 'generic/platform=iOS Simulator' \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
             -configuration Debug \
             -derivedDataPath $CM_BUILD_DIR/build \
             CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGN_IDENTITY="" \
             | xcpretty
 
-      - name: Package app for download
+      - name: Package as unsigned IPA
         script: |
           cd $CM_BUILD_DIR
           APP_PATH=$(find build/Build/Products -name "*.app" -type d | head -1)
           if [ -n "$APP_PATH" ]; then
-            ditto -c -k --sequesterRsrc --keepParent "$APP_PATH" PregnancyScanApp-simulator.zip
-            echo "Packaged: PregnancyScanApp-simulator.zip"
+            echo "Found app: $APP_PATH"
+            # Create Payload structure for IPA
+            mkdir -p Payload
+            cp -r "$APP_PATH" Payload/
+            zip -r PregnancyScanApp-unsigned.ipa Payload/
+            rm -rf Payload
+            echo "Created: PregnancyScanApp-unsigned.ipa"
+          else
+            echo "ERROR: No .app found"
+            exit 1
           fi
 
     artifacts:
       - build/Build/Products/**/*.app
-      - PregnancyScanApp-simulator.zip
+      - PregnancyScanApp-unsigned.ipa
       - /tmp/xcodebuild_logs/*.log
       - build/Logs/Build/*.xcresult
 
@@ -84,24 +93,24 @@ workflows:
                 \"tag_name\": \"$TAG\",
                 \"target_commitish\": \"$COMMIT\",
                 \"name\": \"Build $DATE ($SHORT_SHA)\",
-                \"body\": \"Automated simulator build from Codemagic.\\n\\nCommit: $SHORT_SHA\\nBuild ID: $CM_BUILD_ID\\n\\n**How to use:**\\n1. Download the .zip file\\n2. Extract it\\n3. Drag the .app into an open iOS Simulator (Xcode > Open Developer Tool > Simulator)\\n\\n> Note: This is a simulator build, not installable on physical devices.\",
+                \"body\": \"Unsigned device build from Codemagic.\\n\\nCommit: $SHORT_SHA\\nBuild ID: $CM_BUILD_ID\\n\\n**How to install via Sideloadly (Windows):**\\n1. Download the .ipa file below\\n2. Open Sideloadly on your PC\\n3. Connect your iPhone via USB\\n4. Drag the .ipa into Sideloadly\\n5. Sign in with your Apple ID\\n6. Click Start — Sideloadly will sign and install the app\\n\\n**Note:** Free Apple IDs require re-signing every 7 days. Paid Developer accounts ($99/yr) last 1 year.\",
                 \"draft\": false,
                 \"prerelease\": true
               }")
 
             UPLOAD_URL=$(echo "$RELEASE_RESPONSE" | python3 -c "import sys,json; print(json.load(sys.stdin)['upload_url'].replace('{?name,label}',''))")
 
-            # Upload zip artifact
-            ZIP_FILE="$CM_BUILD_DIR/PregnancyScanApp-simulator.zip"
-            if [ -f "$ZIP_FILE" ]; then
+            # Upload IPA artifact
+            IPA_FILE="$CM_BUILD_DIR/PregnancyScanApp-unsigned.ipa"
+            if [ -f "$IPA_FILE" ]; then
               curl -s -X POST \
                 -H "Authorization: token $GITHUB_TOKEN" \
-                -H "Content-Type: application/zip" \
-                "$UPLOAD_URL?name=PregnancyScanApp-simulator.zip" \
-                --data-binary @"$ZIP_FILE"
+                -H "Content-Type: application/octet-stream" \
+                "$UPLOAD_URL?name=PregnancyScanApp-unsigned.ipa" \
+                --data-binary @"$IPA_FILE"
               echo "Uploaded to GitHub Release: $TAG"
             else
-              echo "No zip file found to upload"
+              echo "No IPA file found to upload"
             fi
 
   ios-release:
