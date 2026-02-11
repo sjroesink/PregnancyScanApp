@@ -12,7 +12,7 @@ final class ScanSessionViewModel {
     private(set) var scanPaths: FileManagerService.ScanFolderPaths?
     private(set) var scanRecord: ScanRecord?
     private(set) var showPointCloudPreview = false
-    private(set) var showPassCompleteSheet = false
+    var showPassCompleteSheet = false
     private(set) var isSessionActive = false
     private(set) var countdownValue: Int = 0
     private(set) var isCountingDown = false

@@ -230,8 +230,6 @@ final class CaptureSessionService {
         isPaused = false
     }
 
-    deinit {
-        stateObservationTask?.cancel()
-        feedbackObservationTask?.cancel()
+    nonisolated deinit {
     }
 }
