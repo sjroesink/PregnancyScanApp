@@ -46,7 +46,7 @@ workflows:
             -derivedDataPath $CM_BUILD_DIR/build \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGN_IDENTITY="" \
-            SWIFT_ACTIVE_COMPILATION_CONDITIONS='DEBUG ENABLE_OBJECT_CAPTURE' \
+            SWIFT_ACTIVE_COMPILATION_CONDITIONS='DEBUG' \
             | xcpretty
 
       - name: Package as unsigned IPA
