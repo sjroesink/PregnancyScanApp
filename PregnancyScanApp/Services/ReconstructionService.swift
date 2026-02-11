@@ -14,11 +14,25 @@ final class ReconstructionService {
 
     private var processingTask: Task<Void, Never>?
 
+    enum ReconstructionError: LocalizedError {
+        case notSupportedOnSimulator
+
+        var errorDescription: String? {
+            switch self {
+            case .notSupportedOnSimulator:
+                return "3D reconstruction is not available in the simulator. Run on a physical device."
+            }
+        }
+    }
+
     func reconstruct(
         imagesDirectory: URL,
         outputModelURL: URL,
         checkpointDirectory: URL?
     ) async throws {
+        #if targetEnvironment(simulator)
+        throw ReconstructionError.notSupportedOnSimulator
+        #else
         isProcessing = true
         isComplete = false
         progress = 0.0
@@ -90,6 +104,7 @@ final class ReconstructionService {
                 break
             }
         }
+        #endif
     }
 
     func cancel() {

@@ -1,6 +1,7 @@
 import SwiftUI
 import RealityKit
 
+#if !targetEnvironment(simulator)
 struct PointCloudPreviewView: View {
 
     let session: ObjectCaptureSession
@@ -25,3 +26,4 @@ struct PointCloudPreviewView: View {
         }
     }
 }
+#endif

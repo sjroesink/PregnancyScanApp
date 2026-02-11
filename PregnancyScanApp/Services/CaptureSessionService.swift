@@ -36,7 +36,9 @@ final class CaptureSessionService {
 
     // MARK: - State
 
+    #if !targetEnvironment(simulator)
     private(set) var objectCaptureSession: ObjectCaptureSession?
+    #endif
     private(set) var currentScanHeight: ScanHeight = .low
     private(set) var completedPasses: Set<ScanHeight> = []
     private(set) var numberOfShotsTaken: Int = 0
@@ -47,9 +49,26 @@ final class CaptureSessionService {
     private var stateObservationTask: Task<Void, Never>?
     private var feedbackObservationTask: Task<Void, Never>?
 
+    // MARK: - Errors
+
+    enum CaptureError: LocalizedError {
+        case deviceNotSupported
+        case sessionCreationFailed
+
+        var errorDescription: String? {
+            switch self {
+            case .deviceNotSupported:
+                return "This device does not support Object Capture."
+            case .sessionCreationFailed:
+                return "Failed to create capture session."
+            }
+        }
+    }
+
     // MARK: - Session Lifecycle
 
     func startSession(imagesDirectory: URL, snapshotsDirectory: URL) throws {
+        #if !targetEnvironment(simulator)
         guard ObjectCaptureSession.isSupported else {
             throw CaptureError.deviceNotSupported
         }
@@ -72,50 +91,66 @@ final class CaptureSessionService {
 
         observeState()
         observeFeedback()
+        #else
+        throw CaptureError.deviceNotSupported
+        #endif
     }
 
     func startDetecting() {
+        #if !targetEnvironment(simulator)
         objectCaptureSession?.startDetecting()
+        #endif
     }
 
     func startCapturing() {
+        #if !targetEnvironment(simulator)
         objectCaptureSession?.startCapturing()
+        #endif
     }
 
     func beginNextPass() {
-        guard let session = objectCaptureSession else { return }
-
         completedPasses.insert(currentScanHeight)
 
         if let nextHeight = ScanHeight(rawValue: currentScanHeight.rawValue + 1) {
-            session.beginNewScanPass()
+            #if !targetEnvironment(simulator)
+            objectCaptureSession?.beginNewScanPass()
+            #endif
             currentScanHeight = nextHeight
         }
     }
 
     func finishCapture() {
         completedPasses.insert(currentScanHeight)
+        #if !targetEnvironment(simulator)
         objectCaptureSession?.finish()
+        #endif
     }
 
     func pauseCapture() {
+        #if !targetEnvironment(simulator)
         objectCaptureSession?.pause()
+        #endif
         isPaused = true
     }
 
     func resumeCapture() {
+        #if !targetEnvironment(simulator)
         objectCaptureSession?.resume()
+        #endif
         isPaused = false
     }
 
     func cancelSession() {
+        #if !targetEnvironment(simulator)
         objectCaptureSession?.cancel()
+        #endif
         cleanup()
     }
 
     // MARK: - Observation
 
     private func observeState() {
+        #if !targetEnvironment(simulator)
         stateObservationTask?.cancel()
         stateObservationTask = Task { [weak self] in
             guard let session = self?.objectCaptureSession else { return }
@@ -124,9 +159,11 @@ final class CaptureSessionService {
                 await self?.handleStateUpdate(newState)
             }
         }
+        #endif
     }
 
     private func observeFeedback() {
+        #if !targetEnvironment(simulator)
         feedbackObservationTask?.cancel()
         feedbackObservationTask = Task { [weak self] in
             guard let session = self?.objectCaptureSession else { return }
@@ -135,8 +172,10 @@ final class CaptureSessionService {
                 await self?.handleFeedback(feedback)
             }
         }
+        #endif
     }
 
+    #if !targetEnvironment(simulator)
     private func handleStateUpdate(_ state: ObjectCaptureSession.CaptureState) {
         switch state {
         case .ready:
@@ -178,30 +217,17 @@ final class CaptureSessionService {
             numberOfShotsTaken = session.numberOfShotsTaken
         }
     }
+    #endif
 
     private func cleanup() {
         stateObservationTask?.cancel()
         feedbackObservationTask?.cancel()
         stateObservationTask = nil
         feedbackObservationTask = nil
+        #if !targetEnvironment(simulator)
         objectCaptureSession = nil
+        #endif
         isPaused = false
-    }
-
-    // MARK: - Errors
-
-    enum CaptureError: LocalizedError {
-        case deviceNotSupported
-        case sessionCreationFailed
-
-        var errorDescription: String? {
-            switch self {
-            case .deviceNotSupported:
-                return "This device does not support Object Capture."
-            case .sessionCreationFailed:
-                return "Failed to create capture session."
-            }
-        }
     }
 
     deinit {
