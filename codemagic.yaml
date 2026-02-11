@@ -16,6 +16,8 @@ workflows:
         XCODE_PROJECT: "PregnancyScanApp.xcodeproj"
         XCODE_SCHEME: "PregnancyScanApp"
         BUNDLE_ID: "com.sjroesink.PregnancyScanApp"
+      groups:
+        - github_credentials
     scripts:
       - name: Install XcodeGen
         script: |
@@ -39,10 +41,68 @@ workflows:
             CODE_SIGNING_ALLOWED=NO \
             | xcpretty
 
+      - name: Package app for download
+        script: |
+          cd $CM_BUILD_DIR
+          APP_PATH=$(find build/Build/Products -name "*.app" -type d | head -1)
+          if [ -n "$APP_PATH" ]; then
+            ditto -c -k --sequesterRsrc --keepParent "$APP_PATH" PregnancyScanApp-simulator.zip
+            echo "Packaged: PregnancyScanApp-simulator.zip"
+          fi
+
     artifacts:
       - build/Build/Products/**/*.app
+      - PregnancyScanApp-simulator.zip
       - /tmp/xcodebuild_logs/*.log
       - build/Logs/Build/*.xcresult
+
+    publishing:
+      scripts:
+        - name: Create GitHub Release
+          script: |
+            #!/bin/bash
+            set -e
+
+            # Requires GITHUB_TOKEN in environment group 'github_credentials'
+            if [ -z "$GITHUB_TOKEN" ]; then
+              echo "GITHUB_TOKEN not set — skipping GitHub Release"
+              exit 0
+            fi
+
+            REPO="sjroesink/PregnancyScanApp"
+            TAG="build-${CM_BUILD_ID}"
+            COMMIT=$(git rev-parse HEAD)
+            SHORT_SHA=$(git rev-parse --short HEAD)
+            DATE=$(date +%Y-%m-%d)
+
+            # Create release
+            RELEASE_RESPONSE=$(curl -s -X POST \
+              -H "Authorization: token $GITHUB_TOKEN" \
+              -H "Content-Type: application/json" \
+              "https://api.github.com/repos/$REPO/releases" \
+              -d "{
+                \"tag_name\": \"$TAG\",
+                \"target_commitish\": \"$COMMIT\",
+                \"name\": \"Build $DATE ($SHORT_SHA)\",
+                \"body\": \"Automated simulator build from Codemagic.\\n\\nCommit: $SHORT_SHA\\nBuild ID: $CM_BUILD_ID\\n\\n**How to use:**\\n1. Download the .zip file\\n2. Extract it\\n3. Drag the .app into an open iOS Simulator (Xcode > Open Developer Tool > Simulator)\\n\\n> Note: This is a simulator build, not installable on physical devices.\",
+                \"draft\": false,
+                \"prerelease\": true
+              }")
+
+            UPLOAD_URL=$(echo "$RELEASE_RESPONSE" | python3 -c "import sys,json; print(json.load(sys.stdin)['upload_url'].replace('{?name,label}',''))")
+
+            # Upload zip artifact
+            ZIP_FILE="$CM_BUILD_DIR/PregnancyScanApp-simulator.zip"
+            if [ -f "$ZIP_FILE" ]; then
+              curl -s -X POST \
+                -H "Authorization: token $GITHUB_TOKEN" \
+                -H "Content-Type: application/zip" \
+                "$UPLOAD_URL?name=PregnancyScanApp-simulator.zip" \
+                --data-binary @"$ZIP_FILE"
+              echo "Uploaded to GitHub Release: $TAG"
+            else
+              echo "No zip file found to upload"
+            fi
 
   ios-release:
     name: iOS Release
