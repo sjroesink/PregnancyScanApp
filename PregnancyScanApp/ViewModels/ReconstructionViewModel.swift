@@ -1,4 +1,3 @@
-#if ENABLE_OBJECT_CAPTURE
 import SwiftUI
 import SwiftData
 
@@ -67,4 +66,3 @@ final class ReconstructionViewModel {
         scanRecord?.status = .failed
     }
 }
-#endif

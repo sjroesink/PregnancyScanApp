@@ -1,4 +1,3 @@
-#if ENABLE_OBJECT_CAPTURE
 import RealityKit
 import ARKit
 import Combine
@@ -207,4 +206,3 @@ final class CaptureSessionService {
     deinit {
     }
 }
-#endif

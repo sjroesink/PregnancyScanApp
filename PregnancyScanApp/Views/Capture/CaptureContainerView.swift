@@ -1,4 +1,3 @@
-#if ENABLE_OBJECT_CAPTURE
 import SwiftUI
 import RealityKit
 import SwiftData
@@ -187,4 +186,3 @@ struct CaptureContainerView: View {
         appState.navigateTo(.reconstruction(scanRecordID: record.id))
     }
 }
-#endif

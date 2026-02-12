@@ -1,4 +1,3 @@
-#if ENABLE_OBJECT_CAPTURE
 import RealityKit
 import Foundation
 
@@ -128,4 +127,3 @@ final class ReconstructionService {
         Int(progress * 100)
     }
 }
-#endif
