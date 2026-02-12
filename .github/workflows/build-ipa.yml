@@ -70,6 +70,9 @@ jobs:
             -sdk iphoneos \
             -destination 'generic/platform=iOS' \
             -archivePath $RUNNER_TEMP/PregnancyScanApp.xcarchive \
+            MARKETING_VERSION=1.0.0 \
+            CURRENT_PROJECT_VERSION=1 \
+            PRODUCT_BUNDLE_IDENTIFIER=com.yourcompany.PregnancyScanApp \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO
 

@@ -140,6 +140,8 @@ final class CaptureSessionService {
 
     private func handleStateUpdate(_ state: AppObjectCaptureSession.CaptureState) {
         switch state {
+        case .initializing:
+            userGuidance = "Initializing session..."
         case .ready:
             userGuidance = "Position yourself to start scanning"
         case .detecting:
