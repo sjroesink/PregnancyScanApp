@@ -47,6 +47,7 @@ targets:
         SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD: "NO"
         IPHONEOS_DEPLOYMENT_TARGET: "17.0"
         SDKROOT: iphoneos
+        SUPPORTED_PLATFORMS: iphoneos
 
       configs:
         Debug:

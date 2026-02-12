@@ -20,6 +20,7 @@ final class ScanSessionViewModel {
     private(set) var isCountingDown = false
 
     #if os(iOS) && ENABLE_OBJECT_CAPTURE
+    @ObservationIgnored
     var session: ObjectCaptureSession? { captureService.objectCaptureSession }
     #endif
     var currentHeight: CaptureSessionService.ScanHeight { captureService.currentScanHeight }

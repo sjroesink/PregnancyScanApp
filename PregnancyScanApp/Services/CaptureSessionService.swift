@@ -40,6 +40,7 @@ final class CaptureSessionService {
 
     // MARK: - State
 
+    @ObservationIgnored
     private(set) var objectCaptureSession: ObjectCaptureSession?
     private(set) var currentScanHeight: ScanHeight = .low
     private(set) var completedPasses: Set<ScanHeight> = []
