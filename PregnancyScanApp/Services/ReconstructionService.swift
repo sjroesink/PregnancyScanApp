@@ -97,7 +97,7 @@ final class ReconstructionService {
             case .automaticDownsampling:
                 self.currentStage = "Downsampling for device..."
 
-            @unknown default:
+            default:
                 break
             }
         }
