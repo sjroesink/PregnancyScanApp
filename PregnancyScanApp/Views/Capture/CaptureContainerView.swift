@@ -2,7 +2,7 @@ import SwiftUI
 import RealityKit
 import SwiftData
 
-#if !targetEnvironment(simulator)
+#if ENABLE_OBJECT_CAPTURE
 
 @available(iOS 17.0, *)
 struct CaptureContainerView: View {

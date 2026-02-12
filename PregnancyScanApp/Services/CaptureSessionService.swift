@@ -2,7 +2,7 @@ import RealityKit
 import ARKit
 import Combine
 
-#if !targetEnvironment(simulator)
+#if ENABLE_OBJECT_CAPTURE
 
 @available(iOS 17.0, *)
 @Observable
