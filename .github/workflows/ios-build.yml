@@ -37,6 +37,13 @@ jobs:
 
       - name: Generate Xcode project
         run: xcodegen generate
+        
+      - name: Show effective platform
+        run: |
+          xcodebuild -showBuildSettings \
+            -project PregnancyScanApp.xcodeproj \
+            -scheme PregnancyScanApp \
+            -configuration Release | egrep "EFFECTIVE_PLATFORM_NAME|PLATFORM_NAME|SDKROOT|SUPPORTED_PLATFORMS" | head -n 200
 
       - name: Build unsigned .app for device
         run: |
