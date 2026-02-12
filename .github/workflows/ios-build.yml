@@ -30,29 +30,11 @@ jobs:
         run: |
           xcodebuild -version
           SDK_PATH=$(xcrun --sdk iphoneos --show-sdk-path)
-          echo "SDK Path: $SDK_PATH"
-          find "$SDK_PATH" -name "RealityKit.swiftmodule" -exec ls -R {} +
+          echo "Current SDK Path: $SDK_PATH"
+          echo "--- SEARCHING FOR SYMBOL IN ALL XCODES ---"
+          find /Applications -name "RealityKit.swiftmodule" -exec grep -rl "ObjectCaptureSession" {} + || echo "Not found in any RealityKit module"
+          find /Applications -name "ObjectCapture.framework" -type d || echo "ObjectCapture.framework not found"
           ls /Applications | grep Xcode
-
-      - name: Install XcodeGen
-        run: brew install xcodegen
-
-      - name: Generate Xcode project
-        run: xcodegen generate
-
-      - name: Build unsigned .app for device
-        run: |
-          xcodebuild build \
-            -project PregnancyScanApp.xcodeproj \
-            -scheme PregnancyScanApp \
-            -sdk iphoneos \
-            -configuration Release \
-            -derivedDataPath build \
-            ARCHS=arm64 \
-            ONLY_ACTIVE_ARCH=NO \
-            CODE_SIGNING_ALLOWED=NO \
-            CODE_SIGN_IDENTITY="" \
-            OTHER_SWIFT_FLAGS="-DENABLE_OBJECT_CAPTURE"
 
       - name: Install XcodeGen
         run: brew install xcodegen
@@ -113,16 +95,6 @@ jobs:
             --notes "Unsigned device build from GitHub Actions.
 
           Commit: $SHORT_SHA
-          Run: #$GITHUB_RUN_NUMBER
-
-          **How to install via Sideloadly (Windows):**
-          1. Download the .ipa file below
-          2. Open Sideloadly on your PC
-          3. Connect your iPhone via USB
-          4. Drag the .ipa into Sideloadly
-          5. Sign in with your Apple ID
-          6. Click Start — Sideloadly will sign and install the app
-
-          **Note:** Free Apple IDs require re-signing every 7 days. Paid Developer accounts (\$99/yr) last 1 year." \
+          Run: #$GITHUB_RUN_NUMBER" \
             --prerelease \
             PregnancyScanApp-unsigned.ipa
