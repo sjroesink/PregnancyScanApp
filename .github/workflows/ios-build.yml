@@ -30,20 +30,17 @@ jobs:
         run: |
           xcodebuild -version
           xcodebuild -showsdks | grep iphoneos
-          xcrun --sdk iphoneos --show-sdk-path
 
-      - name: Install XcodeGen
-        run: brew install xcodegen
-
-      - name: Generate Xcode project
-        run: xcodegen generate
-        
-      - name: Show effective platform
+      - name: Show Build Settings (iOS device)
         run: |
           xcodebuild -showBuildSettings \
             -project PregnancyScanApp.xcodeproj \
             -scheme PregnancyScanApp \
-            -configuration Release | egrep "EFFECTIVE_PLATFORM_NAME|PLATFORM_NAME|SDKROOT|SUPPORTED_PLATFORMS" | head -n 200
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'platform=iOS,id=dvtdevice-DVTiPhonePlaceholder-iphoneos:placeholder' \
+            SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD=NO \
+            | egrep "EFFECTIVE_PLATFORM_NAME|PLATFORM_NAME|SDKROOT|SUPPORTED_PLATFORMS|TARGET_DEVICE_PLATFORM_NAME" | head -n 200
 
       - name: Build unsigned .app for device
         run: |
@@ -51,9 +48,10 @@ jobs:
             -project PregnancyScanApp.xcodeproj \
             -scheme PregnancyScanApp \
             -sdk iphoneos \
-            -destination 'generic/platform=iOS' \
+            -destination 'platform=iOS,id=dvtdevice-DVTiPhonePlaceholder-iphoneos:placeholder' \
             -configuration Release \
             -derivedDataPath build \
+            SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD=NO \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGN_IDENTITY="" \
             | xcpretty
