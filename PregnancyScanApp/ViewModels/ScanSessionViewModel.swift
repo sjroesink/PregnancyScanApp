@@ -4,6 +4,9 @@ import RealityKit
 
 #if canImport(ObjectCapture)
 import ObjectCapture
+typealias AppObjectCaptureSession = ObjectCapture.ObjectCaptureSession
+#else
+typealias AppObjectCaptureSession = RealityKit.ObjectCaptureSession
 #endif
 
 @Observable
@@ -21,7 +24,7 @@ final class ScanSessionViewModel {
     private(set) var countdownValue: Int = 0
     private(set) var isCountingDown = false
 
-    var session: ObjectCaptureSession? { captureService.objectCaptureSession }
+    var session: AppObjectCaptureSession? { captureService.objectCaptureSession }
     var currentHeight: CaptureSessionService.ScanHeight { captureService.currentScanHeight }
     var completedPasses: Set<CaptureSessionService.ScanHeight> { captureService.completedPasses }
     var imageCount: Int { captureService.numberOfShotsTaken }

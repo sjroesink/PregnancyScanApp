@@ -5,6 +5,9 @@ import Observation
 
 #if canImport(ObjectCapture)
 import ObjectCapture
+typealias AppObjectCaptureSession = ObjectCapture.ObjectCaptureSession
+#else
+typealias AppObjectCaptureSession = RealityKit.ObjectCaptureSession
 #endif
 
 @Observable
@@ -41,7 +44,7 @@ final class CaptureSessionService {
 
     // MARK: - State
 
-    private(set) var objectCaptureSession: ObjectCaptureSession?
+    private(set) var objectCaptureSession: AppObjectCaptureSession?
     private(set) var currentScanHeight: ScanHeight = .low
     private(set) var completedPasses: Set<ScanHeight> = []
     private(set) var numberOfShotsTaken: Int = 0
@@ -55,13 +58,13 @@ final class CaptureSessionService {
     // MARK: - Session Lifecycle
 
     func startSession(imagesDirectory: URL, snapshotsDirectory: URL) throws {
-        guard ObjectCaptureSession.isSupported else {
+        guard AppObjectCaptureSession.isSupported else {
             throw CaptureError.deviceNotSupported
         }
 
-        let session = ObjectCaptureSession()
+        let session = AppObjectCaptureSession()
 
-        var configuration = ObjectCaptureSession.Configuration()
+        var configuration = AppObjectCaptureSession.Configuration()
         configuration.checkpointDirectory = snapshotsDirectory
         configuration.isOverCaptureEnabled = true
 
@@ -142,7 +145,7 @@ final class CaptureSessionService {
         }
     }
 
-    private func handleStateUpdate(_ state: ObjectCaptureSession.CaptureState) {
+    private func handleStateUpdate(_ state: AppObjectCaptureSession.CaptureState) {
         switch state {
         case .ready:
             userGuidance = "Position yourself to start scanning"
@@ -162,7 +165,7 @@ final class CaptureSessionService {
         }
     }
 
-    private func handleFeedback(_ feedback: Set<ObjectCaptureSession.Feedback>) {
+    private func handleFeedback(_ feedback: Set<AppObjectCaptureSession.Feedback>) {
         if feedback.contains(.objectTooClose) {
             userGuidance = "Move further from the subject"
         } else if feedback.contains(.objectTooFar) {

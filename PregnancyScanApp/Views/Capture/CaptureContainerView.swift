@@ -4,6 +4,13 @@ import SwiftData
 
 #if canImport(ObjectCapture)
 import ObjectCapture
+typealias AppObjectCaptureSession = ObjectCapture.ObjectCaptureSession
+typealias AppObjectCaptureView = ObjectCapture.ObjectCaptureView
+typealias AppObjectCapturePointCloudView = ObjectCapture.ObjectCapturePointCloudView
+#else
+typealias AppObjectCaptureSession = RealityKit.ObjectCaptureSession
+typealias AppObjectCaptureView = RealityKit.ObjectCaptureView
+typealias AppObjectCapturePointCloudView = RealityKit.ObjectCapturePointCloudView
 #endif
 
 struct CaptureContainerView: View {
@@ -65,12 +72,12 @@ struct CaptureContainerView: View {
     // MARK: - Subviews
 
     @ViewBuilder
-    private func captureSessionView(session: ObjectCaptureSession) -> some View {
+    private func captureSessionView(session: AppObjectCaptureSession) -> some View {
         ZStack {
-            RealityKit.ObjectCaptureView(session: session)
+            AppObjectCaptureView(session: session)
 
             if viewModel.showPointCloudPreview {
-                RealityKit.ObjectCapturePointCloudView(session: session)
+                AppObjectCapturePointCloudView(session: session)
                     .transition(.opacity)
             }
 

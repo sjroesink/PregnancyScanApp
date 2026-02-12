@@ -3,6 +3,9 @@ import RealityKit
 
 #if canImport(ObjectCapture)
 import ObjectCapture
+typealias AppObjectCaptureSession = ObjectCapture.ObjectCaptureSession
+#else
+typealias AppObjectCaptureSession = RealityKit.ObjectCaptureSession
 #endif
 
 enum DeviceCapabilityChecker {
@@ -27,8 +30,8 @@ enum DeviceCapabilityChecker {
         supportsObjectCapture = false
         missing.append("Physical device required (simulator not supported)")
         #else
-        #if canImport(ObjectCapture)
-        supportsObjectCapture = ObjectCaptureSession.isSupported
+        #if canImport(ObjectCapture) || canImport(RealityKit)
+        supportsObjectCapture = AppObjectCaptureSession.isSupported
         #else
         supportsObjectCapture = false
         #endif

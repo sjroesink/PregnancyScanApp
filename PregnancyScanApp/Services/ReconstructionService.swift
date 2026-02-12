@@ -1,6 +1,13 @@
 import RealityKit
 import Foundation
 
+#if canImport(ObjectCapture)
+import ObjectCapture
+typealias AppPhotogrammetrySession = ObjectCapture.PhotogrammetrySession
+#else
+typealias AppPhotogrammetrySession = RealityKit.PhotogrammetrySession
+#endif
+
 @Observable
 @MainActor
 final class ReconstructionService {
@@ -24,7 +31,7 @@ final class ReconstructionService {
         progress = 0.0
         currentStage = "Initializing..."
 
-        var configuration = PhotogrammetrySession.Configuration()
+        var configuration = AppPhotogrammetrySession.Configuration()
 
         if let checkpointDir = checkpointDirectory {
             configuration.checkpointDirectory = checkpointDir
@@ -34,12 +41,12 @@ final class ReconstructionService {
         configuration.isObjectMaskingEnabled = true
         configuration.sampleOrdering = .unordered
 
-        let session = try PhotogrammetrySession(
+        let session = try AppPhotogrammetrySession(
             input: imagesDirectory,
             configuration: configuration
         )
 
-        let request = PhotogrammetrySession.Request.modelFile(url: outputModelURL)
+        let request = AppPhotogrammetrySession.Request.modelFile(url: outputModelURL)
         try session.process(requests: [request])
 
         for try await output in session.outputs {
