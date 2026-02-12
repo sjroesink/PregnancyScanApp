@@ -88,11 +88,10 @@ final class ReconstructionService {
             case .inputComplete:
                 self.currentStage = "Processing images..."
 
-            case .invalidSample(let id, let reason):
-                // Skip invalid samples silently
+            case .invalidSample(_, _):
                 break
 
-            case .skippedSample(let id):
+            case .skippedSample(_):
                 break
 
             case .automaticDownsampling:
