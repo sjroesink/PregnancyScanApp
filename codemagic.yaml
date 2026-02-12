@@ -42,12 +42,10 @@ workflows:
             -scheme "$XCODE_SCHEME" \
             -sdk iphoneos \
             -destination 'generic/platform=iOS' \
-            -configuration Debug \
+            -configuration Release \
             -derivedDataPath $CM_BUILD_DIR/build \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGN_IDENTITY="" \
-            ENABLE_PREVIEWS=NO \
-            SWIFT_ACTIVE_COMPILATION_CONDITIONS="DEBUG" \
             | xcpretty
 
       - name: Package as unsigned IPA
