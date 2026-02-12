@@ -2,6 +2,7 @@ import RealityKit
 import ARKit
 import Combine
 import Observation
+import ObjectCapture
 
 @Observable
 @MainActor
@@ -37,7 +38,7 @@ final class CaptureSessionService {
 
     // MARK: - State
 
-    private(set) var objectCaptureSession: RealityKit.ObjectCaptureSession?
+    private(set) var objectCaptureSession: ObjectCaptureSession?
     private(set) var currentScanHeight: ScanHeight = .low
     private(set) var completedPasses: Set<ScanHeight> = []
     private(set) var numberOfShotsTaken: Int = 0
@@ -51,13 +52,13 @@ final class CaptureSessionService {
     // MARK: - Session Lifecycle
 
     func startSession(imagesDirectory: URL, snapshotsDirectory: URL) throws {
-        guard RealityKit.ObjectCaptureSession.isSupported else {
+        guard ObjectCaptureSession.isSupported else {
             throw CaptureError.deviceNotSupported
         }
 
-        let session = RealityKit.ObjectCaptureSession()
+        let session = ObjectCaptureSession()
 
-        var configuration = RealityKit.ObjectCaptureSession.Configuration()
+        var configuration = ObjectCaptureSession.Configuration()
         configuration.checkpointDirectory = snapshotsDirectory
         configuration.isOverCaptureEnabled = true
 
@@ -138,7 +139,7 @@ final class CaptureSessionService {
         }
     }
 
-    private func handleStateUpdate(_ state: RealityKit.ObjectCaptureSession.CaptureState) {
+    private func handleStateUpdate(_ state: ObjectCaptureSession.CaptureState) {
         switch state {
         case .ready:
             userGuidance = "Position yourself to start scanning"
@@ -158,7 +159,7 @@ final class CaptureSessionService {
         }
     }
 
-    private func handleFeedback(_ feedback: Set<RealityKit.ObjectCaptureSession.Feedback>) {
+    private func handleFeedback(_ feedback: Set<ObjectCaptureSession.Feedback>) {
         if feedback.contains(.objectTooClose) {
             userGuidance = "Move further from the subject"
         } else if feedback.contains(.objectTooFar) {

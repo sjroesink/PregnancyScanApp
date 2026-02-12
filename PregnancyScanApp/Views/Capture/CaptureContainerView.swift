@@ -1,6 +1,7 @@
 import SwiftUI
 import RealityKit
 import SwiftData
+import ObjectCapture
 
 struct CaptureContainerView: View {
 
@@ -61,7 +62,7 @@ struct CaptureContainerView: View {
     // MARK: - Subviews
 
     @ViewBuilder
-    private func captureSessionView(session: RealityKit.ObjectCaptureSession) -> some View {
+    private func captureSessionView(session: ObjectCaptureSession) -> some View {
         ZStack {
             RealityKit.ObjectCaptureView(session: session)
 

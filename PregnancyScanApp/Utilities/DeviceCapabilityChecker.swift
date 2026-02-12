@@ -1,5 +1,6 @@
 import ARKit
 import RealityKit
+import ObjectCapture
 
 enum DeviceCapabilityChecker {
 
@@ -23,7 +24,7 @@ enum DeviceCapabilityChecker {
         supportsObjectCapture = false
         missing.append("Physical device required (simulator not supported)")
         #else
-        #if canImport(RealityKit)
+        #if canImport(ObjectCapture)
         supportsObjectCapture = ObjectCaptureSession.isSupported
         #else
         supportsObjectCapture = false
