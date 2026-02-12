@@ -1,0 +1,98 @@
+name: iOS Build
+
+on:
+  push:
+    branches: ['*']
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build unsigned .app
+    runs-on: macos-15
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
+
+      - name: Show Xcode and SDK info
+        run: |
+          xcodebuild -version
+          xcodebuild -showsdks | grep iphoneos
+          xcrun --sdk iphoneos --show-sdk-path
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        run: xcodegen generate
+
+      - name: Build unsigned .app for device
+        run: |
+          xcodebuild build \
+            -project PregnancyScanApp.xcodeproj \
+            -scheme PregnancyScanApp \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -configuration Release \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGN_IDENTITY="" \
+            | xcpretty
+
+      - name: Package as unsigned IPA
+        run: |
+          APP_PATH=$(find build/Build/Products -name "*.app" -type d | head -1)
+          if [ -n "$APP_PATH" ]; then
+            echo "Found app: $APP_PATH"
+            mkdir -p Payload
+            cp -r "$APP_PATH" Payload/
+            zip -r PregnancyScanApp-unsigned.ipa Payload/
+            rm -rf Payload
+            echo "Created: PregnancyScanApp-unsigned.ipa"
+          else
+            echo "ERROR: No .app found"
+            exit 1
+          fi
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PregnancyScanApp-unsigned
+          path: PregnancyScanApp-unsigned.ipa
+
+      - name: Create GitHub Release
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          SHORT_SHA=$(git rev-parse --short HEAD)
+          DATE=$(date +%Y-%m-%d)
+          TAG="build-${GITHUB_RUN_NUMBER}"
+
+          gh release create "$TAG" \
+            --title "Build $DATE ($SHORT_SHA)" \
+            --notes "Unsigned device build from GitHub Actions.
+
+          Commit: $SHORT_SHA
+          Run: #$GITHUB_RUN_NUMBER
+
+          **How to install via Sideloadly (Windows):**
+          1. Download the .ipa file below
+          2. Open Sideloadly on your PC
+          3. Connect your iPhone via USB
+          4. Drag the .ipa into Sideloadly
+          5. Sign in with your Apple ID
+          6. Click Start — Sideloadly will sign and install the app
+
+          **Note:** Free Apple IDs require re-signing every 7 days. Paid Developer accounts (\$99/yr) last 1 year." \
+            --prerelease \
+            PregnancyScanApp-unsigned.ipa
