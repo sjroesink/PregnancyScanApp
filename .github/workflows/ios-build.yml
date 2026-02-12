@@ -24,22 +24,13 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Select Xcode
-        run: |
-          XCODE_VERSION="16.1"
-          if [ -d "/Applications/Xcode_$XCODE_VERSION.app" ]; then
-            sudo xcode-select -s "/Applications/Xcode_$XCODE_VERSION.app/Contents/Developer"
-          elif [ -d "/Applications/Xcode_16.0.app" ]; then
-            sudo xcode-select -s "/Applications/Xcode_16.0.app/Contents/Developer"
-          else
-            sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
-          fi
+        run: sudo xcode-select -s /Applications/Xcode_16.2.app/Contents/Developer || sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
 
       - name: Show Xcode and SDK info
         run: |
           xcodebuild -version
           xcodebuild -showsdks
           ls /Applications | grep Xcode
-          find $(xcrun --sdk iphoneos --show-sdk-path) -name "RealityKit.swiftmodule" -type d
 
       - name: Install XcodeGen
         run: brew install xcodegen
@@ -58,12 +49,12 @@ jobs:
             -derivedDataPath build \
             IPHONEOS_DEPLOYMENT_TARGET=17.0 \
             ARCHS=arm64 \
+            SDKROOT=iphoneos \
             ONLY_ACTIVE_ARCH=NO \
             SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD=NO \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGN_IDENTITY="" \
-            OTHER_SWIFT_FLAGS="-DENABLE_OBJECT_CAPTURE" \
-            | xcpretty
+            OTHER_SWIFT_FLAGS="-DENABLE_OBJECT_CAPTURE"
 
       - name: Package as unsigned IPA
         run: |

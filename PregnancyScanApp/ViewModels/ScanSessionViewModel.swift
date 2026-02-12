@@ -19,8 +19,8 @@ final class ScanSessionViewModel {
     private(set) var countdownValue: Int = 0
     private(set) var isCountingDown = false
 
-    #if ENABLE_OBJECT_CAPTURE
-    var session: RealityKit.ObjectCaptureSession? { captureService.objectCaptureSession }
+    #if os(iOS) && ENABLE_OBJECT_CAPTURE
+    var session: ObjectCaptureSession? { captureService.objectCaptureSession }
     #endif
     var currentHeight: CaptureSessionService.ScanHeight { captureService.currentScanHeight }
     var completedPasses: Set<CaptureSessionService.ScanHeight> { captureService.completedPasses }

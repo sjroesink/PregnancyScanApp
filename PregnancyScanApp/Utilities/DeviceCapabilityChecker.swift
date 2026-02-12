@@ -19,8 +19,8 @@ enum DeviceCapabilityChecker {
             missing.append("LiDAR Scanner")
         }
 
-        #if ENABLE_OBJECT_CAPTURE
-        let supportsObjectCapture = RealityKit.ObjectCaptureSession.isSupported
+        #if os(iOS) && ENABLE_OBJECT_CAPTURE
+        let supportsObjectCapture = ObjectCaptureSession.isSupported
         #else
         let supportsObjectCapture = false
         #endif
