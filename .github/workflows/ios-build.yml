@@ -31,6 +31,12 @@ jobs:
           xcodebuild -version
           xcodebuild -showsdks | grep iphoneos
 
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        run: xcodegen generate
+        
       - name: Show Build Settings (iOS device)
         run: |
           xcodebuild -showBuildSettings \
