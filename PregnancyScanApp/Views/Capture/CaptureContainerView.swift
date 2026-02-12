@@ -1,7 +1,10 @@
 import SwiftUI
 import RealityKit
 import SwiftData
+
+#if canImport(ObjectCapture)
 import ObjectCapture
+#endif
 
 struct CaptureContainerView: View {
 

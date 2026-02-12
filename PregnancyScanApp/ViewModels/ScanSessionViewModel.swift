@@ -1,7 +1,10 @@
 import SwiftUI
 import SwiftData
 import RealityKit
+
+#if canImport(ObjectCapture)
 import ObjectCapture
+#endif
 
 @Observable
 @MainActor

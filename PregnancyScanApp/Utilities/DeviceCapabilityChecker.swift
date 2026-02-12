@@ -1,6 +1,9 @@
 import ARKit
 import RealityKit
+
+#if canImport(ObjectCapture)
 import ObjectCapture
+#endif
 
 enum DeviceCapabilityChecker {
 

@@ -2,7 +2,10 @@ import RealityKit
 import ARKit
 import Combine
 import Observation
+
+#if canImport(ObjectCapture)
 import ObjectCapture
+#endif
 
 @Observable
 @MainActor
