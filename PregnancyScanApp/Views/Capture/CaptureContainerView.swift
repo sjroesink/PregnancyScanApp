@@ -12,7 +12,7 @@ struct CaptureContainerView: View {
     @State private var showCancelConfirmation = false
 
     var body: some View {
-        @Bindable var viewModel = viewModel
+        @Bindable var bindableViewModel = viewModel
         ZStack {
             if let session = viewModel.session {
                 captureSessionView(session: session)
@@ -51,7 +51,7 @@ struct CaptureContainerView: View {
         } message: {
             Text("All captured images will be discarded.")
         }
-        .sheet(isPresented: $viewModel.showPassCompleteSheet) {
+        .sheet(isPresented: $bindableViewModel.showPassCompleteSheet) {
             passCompleteSheet
         }
         .task {
