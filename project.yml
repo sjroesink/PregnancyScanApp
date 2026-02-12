@@ -1,0 +1,26 @@
+﻿name: PregnancyScanApp
+options:
+  bundleIdPrefix: com.yourcompany
+targets:
+  PregnancyScanApp:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: PregnancyScanApp
+    settings:
+      base:
+        SWIFT_VERSION: "5.9"
+        INFOPLIST_FILE: PregnancyScanApp/Info.plist
+        PRODUCT_BUNDLE_IDENTIFIER: com.yourcompany.PregnancyScanApp
+        MARKETING_VERSION: 1.0.0
+        CURRENT_PROJECT_VERSION: 1
+        GENERATE_INFOPLIST_FILE: NO
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+    frameworks:
+      - sdk: RealityKit.framework
+      - sdk: ARKit.framework
+      - sdk: ModelIO.framework
+      - sdk: SceneKit.framework
+      - sdk: QuickLook.framework
+      - sdk: SwiftData.framework
