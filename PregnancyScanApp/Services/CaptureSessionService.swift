@@ -2,6 +2,8 @@ import RealityKit
 import ARKit
 import Combine
 
+#if !targetEnvironment(simulator)
+
 @available(iOS 17.0, *)
 @Observable
 @MainActor
@@ -206,3 +208,73 @@ final class CaptureSessionService {
     deinit {
     }
 }
+
+#else
+
+// MARK: - Simulator Stub
+
+@available(iOS 17.0, *)
+@Observable
+@MainActor
+final class CaptureSessionService {
+
+    enum ScanHeight: Int, CaseIterable, Identifiable {
+        case low = 0
+        case mid = 1
+        case high = 2
+
+        var id: Int { rawValue }
+
+        var title: String {
+            switch self {
+            case .low: return AppConstants.ScanPassGuidance.lowPassTitle
+            case .mid: return AppConstants.ScanPassGuidance.midPassTitle
+            case .high: return AppConstants.ScanPassGuidance.highPassTitle
+            }
+        }
+
+        var guidance: String {
+            switch self {
+            case .low: return AppConstants.ScanPassGuidance.lowPassDescription
+            case .mid: return AppConstants.ScanPassGuidance.midPassDescription
+            case .high: return AppConstants.ScanPassGuidance.highPassDescription
+            }
+        }
+
+        var passNumber: Int { rawValue + 1 }
+    }
+
+    enum CaptureError: LocalizedError {
+        case deviceNotSupported
+        case sessionCreationFailed
+
+        var errorDescription: String? {
+            switch self {
+            case .deviceNotSupported:
+                return "This device does not support Object Capture."
+            case .sessionCreationFailed:
+                return "Failed to create capture session."
+            }
+        }
+    }
+
+    private(set) var currentScanHeight: ScanHeight = .low
+    private(set) var completedPasses: Set<ScanHeight> = []
+    private(set) var numberOfShotsTaken: Int = 0
+    private(set) var userGuidance: String = ""
+    private(set) var canRequestModelOutput: Bool = false
+    private(set) var isPaused: Bool = false
+
+    func startSession(imagesDirectory: URL, snapshotsDirectory: URL) throws {
+        throw CaptureError.deviceNotSupported
+    }
+    func startDetecting() {}
+    func startCapturing() {}
+    func beginNextPass() {}
+    func finishCapture() {}
+    func pauseCapture() {}
+    func resumeCapture() {}
+    func cancelSession() {}
+}
+
+#endif

@@ -18,7 +18,9 @@ final class ScanSessionViewModel {
     private(set) var countdownValue: Int = 0
     private(set) var isCountingDown = false
 
+    #if !targetEnvironment(simulator)
     var session: ObjectCaptureSession? { captureService.objectCaptureSession }
+    #endif
     var currentHeight: CaptureSessionService.ScanHeight { captureService.currentScanHeight }
     var completedPasses: Set<CaptureSessionService.ScanHeight> { captureService.completedPasses }
     var imageCount: Int { captureService.numberOfShotsTaken }

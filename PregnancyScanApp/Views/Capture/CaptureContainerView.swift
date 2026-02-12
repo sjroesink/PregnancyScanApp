@@ -2,6 +2,8 @@ import SwiftUI
 import RealityKit
 import SwiftData
 
+#if !targetEnvironment(simulator)
+
 @available(iOS 17.0, *)
 struct CaptureContainerView: View {
 
@@ -186,3 +188,28 @@ struct CaptureContainerView: View {
         appState.navigateTo(.reconstruction(scanRecordID: record.id))
     }
 }
+
+#else
+
+// MARK: - Simulator Stub
+
+@available(iOS 17.0, *)
+struct CaptureContainerView: View {
+
+    let scanRecordID: UUID
+
+    var body: some View {
+        VStack(spacing: 16) {
+            Image(systemName: "camera.fill")
+                .font(.system(size: 48))
+                .foregroundStyle(.secondary)
+            Text("Object Capture is not available in the simulator.")
+                .font(.headline)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+        }
+        .padding()
+    }
+}
+
+#endif

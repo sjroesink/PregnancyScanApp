@@ -19,7 +19,11 @@ enum DeviceCapabilityChecker {
             missing.append("LiDAR Scanner")
         }
 
+        #if !targetEnvironment(simulator)
         let supportsObjectCapture = ObjectCaptureSession.isSupported
+        #else
+        let supportsObjectCapture = false
+        #endif
         if !supportsObjectCapture {
             missing.append("Object Capture")
         }

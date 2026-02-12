@@ -1,6 +1,8 @@
 import SwiftUI
 import RealityKit
 
+#if !targetEnvironment(simulator)
+
 @available(iOS 17.0, *)
 struct PointCloudPreviewView: View {
 
@@ -26,3 +28,5 @@ struct PointCloudPreviewView: View {
         }
     }
 }
+
+#endif
