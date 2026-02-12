@@ -24,15 +24,14 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Select Xcode
-        run: sudo xcode-select -s /Applications/Xcode_26.2.app/Contents/Developer || sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
+        run: sudo xcode-select -s /Applications/Xcode_16.4.app/Contents/Developer || sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
 
       - name: Show Xcode and SDK info
         run: |
           xcodebuild -version
           SDK_PATH=$(xcrun --sdk iphoneos --show-sdk-path)
           echo "SDK Path: $SDK_PATH"
-          echo "Searching for ObjectCaptureSession in SDK..."
-          grep -rl "ObjectCaptureSession" "$SDK_PATH" || echo "Not found in SDK"
+          find "$SDK_PATH" -name "RealityKit.swiftmodule" -exec ls -R {} +
           ls /Applications | grep Xcode
 
       - name: Install XcodeGen
@@ -49,7 +48,6 @@ jobs:
             -sdk iphoneos \
             -configuration Release \
             -derivedDataPath build \
-            IPHONEOS_DEPLOYMENT_TARGET=18.0 \
             ARCHS=arm64 \
             ONLY_ACTIVE_ARCH=NO \
             CODE_SIGNING_ALLOWED=NO \

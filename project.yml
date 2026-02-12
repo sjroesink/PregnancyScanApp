@@ -48,6 +48,7 @@ targets:
         IPHONEOS_DEPLOYMENT_TARGET: "17.0"
         SDKROOT: iphoneos
         SUPPORTED_PLATFORMS: iphoneos
+        VALID_ARCHS: arm64
 
       configs:
         Debug:
@@ -60,12 +61,15 @@ targets:
 
     dependencies:
       - sdk: RealityKit.framework
+      - sdk: RealityFoundation.framework
       - sdk: ARKit.framework
       - sdk: ModelIO.framework
       - sdk: SceneKit.framework
       - sdk: QuickLook.framework
       - sdk: Observation.framework
       - sdk: SwiftData.framework
+      - sdk: Metal.framework
+      - sdk: QuartzCore.framework
 
     entitlements:
       path: PregnancyScanApp/PregnancyScanApp.entitlements

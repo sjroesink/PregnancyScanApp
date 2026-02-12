@@ -4,6 +4,16 @@ import Combine
 import Observation
 
 #if os(iOS) && ENABLE_OBJECT_CAPTURE
+import RealityKit
+
+/// A non-observable wrapper to hold the ObjectCaptureSession.
+/// This prevents the @Observable macro in the main service from trying to process
+/// the ObjectCaptureSession type, which can fail on some CI environments.
+@MainActor
+final class CaptureSessionWrapper {
+    var session: ObjectCaptureSession?
+}
+#endif
 
 @available(iOS 17.0, *)
 @Observable
@@ -40,8 +50,12 @@ final class CaptureSessionService {
 
     // MARK: - State
 
+    #if os(iOS) && ENABLE_OBJECT_CAPTURE
     @ObservationIgnored
-    private(set) var objectCaptureSession: ObjectCaptureSession?
+    private let wrapper = CaptureSessionWrapper()
+    var objectCaptureSession: ObjectCaptureSession? { wrapper.session }
+    #endif
+
     private(set) var currentScanHeight: ScanHeight = .low
     private(set) var completedPasses: Set<ScanHeight> = []
     private(set) var numberOfShotsTaken: Int = 0
@@ -71,6 +85,7 @@ final class CaptureSessionService {
     // MARK: - Session Lifecycle
 
     func startSession(imagesDirectory: URL, snapshotsDirectory: URL) throws {
+        #if os(iOS) && ENABLE_OBJECT_CAPTURE
         guard ObjectCaptureSession.isSupported else {
             throw CaptureError.deviceNotSupported
         }
@@ -86,55 +101,73 @@ final class CaptureSessionService {
             configuration: configuration
         )
 
-        self.objectCaptureSession = session
+        self.wrapper.session = session
         self.currentScanHeight = .low
         self.completedPasses = []
         self.numberOfShotsTaken = 0
 
         observeState()
         observeFeedback()
+        #else
+        throw CaptureError.deviceNotSupported
+        #endif
     }
 
     func startDetecting() {
+        #if os(iOS) && ENABLE_OBJECT_CAPTURE
         objectCaptureSession?.startDetecting()
+        #endif
     }
 
     func startCapturing() {
+        #if os(iOS) && ENABLE_OBJECT_CAPTURE
         objectCaptureSession?.startCapturing()
+        #endif
     }
 
     func beginNextPass() {
         completedPasses.insert(currentScanHeight)
 
+        #if os(iOS) && ENABLE_OBJECT_CAPTURE
         if let nextHeight = ScanHeight(rawValue: currentScanHeight.rawValue + 1) {
             objectCaptureSession?.beginNewScanPass()
             currentScanHeight = nextHeight
         }
+        #endif
     }
 
     func finishCapture() {
         completedPasses.insert(currentScanHeight)
+        #if os(iOS) && ENABLE_OBJECT_CAPTURE
         objectCaptureSession?.finish()
+        #endif
     }
 
     func pauseCapture() {
+        #if os(iOS) && ENABLE_OBJECT_CAPTURE
         objectCaptureSession?.pause()
+        #endif
         isPaused = true
     }
 
     func resumeCapture() {
+        #if os(iOS) && ENABLE_OBJECT_CAPTURE
         objectCaptureSession?.resume()
+        #endif
         isPaused = false
     }
 
     func cancelSession() {
+        #if os(iOS) && ENABLE_OBJECT_CAPTURE
         objectCaptureSession?.cancel()
+        #endif
         cleanup()
     }
 
     // MARK: - Observation
 
     private func observeState() {
+        #if os(iOS) && ENABLE_OBJECT_CAPTURE
         stateObservationTask?.cancel()
         stateObservationTask = Task { [weak self] in
             guard let session = self?.objectCaptureSession else { return }
@@ -143,9 +176,11 @@ final class CaptureSessionService {
                 await self?.handleStateUpdate(newState)
             }
         }
+        #endif
     }
 
     private func observeFeedback() {
+        #if os(iOS) && ENABLE_OBJECT_CAPTURE
         feedbackObservationTask?.cancel()
         feedbackObservationTask = Task { [weak self] in
             guard let session = self?.objectCaptureSession else { return }
@@ -154,8 +189,10 @@ final class CaptureSessionService {
                 await self?.handleFeedback(feedback)
             }
         }
+        #endif
     }
 
+    #if os(iOS) && ENABLE_OBJECT_CAPTURE
     private func handleStateUpdate(_ state: ObjectCaptureSession.CaptureState) {
         switch state {
         case .ready:
@@ -197,13 +234,16 @@ final class CaptureSessionService {
             numberOfShotsTaken = session.numberOfShotsTaken
         }
     }
+    #endif
 
     private func cleanup() {
+        #if os(iOS) && ENABLE_OBJECT_CAPTURE
         stateObservationTask?.cancel()
         feedbackObservationTask?.cancel()
         stateObservationTask = nil
         feedbackObservationTask = nil
-        objectCaptureSession = nil
+        wrapper.session = nil
+        #endif
         isPaused = false
     }
 
