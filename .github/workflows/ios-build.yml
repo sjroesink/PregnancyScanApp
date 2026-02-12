@@ -49,7 +49,6 @@ jobs:
             SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD=NO \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGN_IDENTITY="" \
-            'SWIFT_ACTIVE_COMPILATION_CONDITIONS=' \
             | xcpretty
 
       - name: Package as unsigned IPA
