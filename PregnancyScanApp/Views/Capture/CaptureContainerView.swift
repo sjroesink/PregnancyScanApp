@@ -2,17 +2,6 @@ import SwiftUI
 import RealityKit
 import SwiftData
 
-#if canImport(ObjectCapture)
-import ObjectCapture
-typealias AppObjectCaptureSession = ObjectCapture.ObjectCaptureSession
-typealias AppObjectCaptureView = ObjectCapture.ObjectCaptureView
-typealias AppObjectCapturePointCloudView = ObjectCapture.ObjectCapturePointCloudView
-#else
-typealias AppObjectCaptureSession = RealityKit.ObjectCaptureSession
-typealias AppObjectCaptureView = RealityKit.ObjectCaptureView
-typealias AppObjectCapturePointCloudView = RealityKit.ObjectCapturePointCloudView
-#endif
-
 struct CaptureContainerView: View {
 
     let scanRecordID: UUID
@@ -23,6 +12,7 @@ struct CaptureContainerView: View {
     @State private var showCancelConfirmation = false
 
     var body: some View {
+        @Bindable var viewModel = viewModel
         ZStack {
             if let session = viewModel.session {
                 captureSessionView(session: session)

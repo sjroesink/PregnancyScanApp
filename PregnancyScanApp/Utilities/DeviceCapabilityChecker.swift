@@ -1,13 +1,7 @@
 import ARKit
 import RealityKit
 
-#if canImport(ObjectCapture)
-import ObjectCapture
-typealias AppObjectCaptureSession = ObjectCapture.ObjectCaptureSession
-#else
-typealias AppObjectCaptureSession = RealityKit.ObjectCaptureSession
-#endif
-
+@MainActor
 enum DeviceCapabilityChecker {
 
     struct CapabilityResult {
@@ -30,7 +24,7 @@ enum DeviceCapabilityChecker {
         supportsObjectCapture = false
         missing.append("Physical device required (simulator not supported)")
         #else
-        #if canImport(ObjectCapture) || canImport(RealityKit)
+        #if canImport(ObjectCapture) || canImport(RealityKit) || canImport(_RealityKit_SwiftUI)
         supportsObjectCapture = AppObjectCaptureSession.isSupported
         #else
         supportsObjectCapture = false

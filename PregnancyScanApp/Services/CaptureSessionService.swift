@@ -3,13 +3,6 @@ import ARKit
 import Combine
 import Observation
 
-#if canImport(ObjectCapture)
-import ObjectCapture
-typealias AppObjectCaptureSession = ObjectCapture.ObjectCaptureSession
-#else
-typealias AppObjectCaptureSession = RealityKit.ObjectCaptureSession
-#endif
-
 @Observable
 @MainActor
 final class CaptureSessionService {
@@ -166,17 +159,17 @@ final class CaptureSessionService {
     }
 
     private func handleFeedback(_ feedback: Set<AppObjectCaptureSession.Feedback>) {
-        if feedback.contains(.objectTooClose) {
+        if feedback.contains(AppObjectCaptureSession.Feedback.objectTooClose) {
             userGuidance = "Move further from the subject"
-        } else if feedback.contains(.objectTooFar) {
+        } else if feedback.contains(AppObjectCaptureSession.Feedback.objectTooFar) {
             userGuidance = "Move closer to the subject"
-        } else if feedback.contains(.movingTooFast) {
+        } else if feedback.contains(AppObjectCaptureSession.Feedback.movingTooFast) {
             userGuidance = "Slow down your movement"
-        } else if feedback.contains(.environmentTooDark) {
+        } else if feedback.contains(AppObjectCaptureSession.Feedback.environmentTooDark) {
             userGuidance = "More light is needed"
-        } else if feedback.contains(.environmentLowLight) {
+        } else if feedback.contains(AppObjectCaptureSession.Feedback.environmentLowLight) {
             userGuidance = "Consider adding more light"
-        } else if feedback.contains(.outOfFieldOfView) {
+        } else if feedback.contains(AppObjectCaptureSession.Feedback.outOfFieldOfView) {
             userGuidance = "Point camera at the subject"
         } else if feedback.isEmpty {
             userGuidance = currentScanHeight.guidance

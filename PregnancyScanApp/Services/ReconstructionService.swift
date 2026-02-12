@@ -1,13 +1,6 @@
 import RealityKit
 import Foundation
 
-#if canImport(ObjectCapture)
-import ObjectCapture
-typealias AppPhotogrammetrySession = ObjectCapture.PhotogrammetrySession
-#else
-typealias AppPhotogrammetrySession = RealityKit.PhotogrammetrySession
-#endif
-
 @Observable
 @MainActor
 final class ReconstructionService {

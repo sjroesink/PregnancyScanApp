@@ -2,13 +2,6 @@ import SwiftUI
 import SwiftData
 import RealityKit
 
-#if canImport(ObjectCapture)
-import ObjectCapture
-typealias AppObjectCaptureSession = ObjectCapture.ObjectCaptureSession
-#else
-typealias AppObjectCaptureSession = RealityKit.ObjectCaptureSession
-#endif
-
 @Observable
 @MainActor
 final class ScanSessionViewModel {
