@@ -61,12 +61,12 @@ struct CaptureContainerView: View {
     // MARK: - Subviews
 
     @ViewBuilder
-    private func captureSessionView(session: ObjectCaptureSession) -> some View {
+    private func captureSessionView(session: RealityKit.ObjectCaptureSession) -> some View {
         ZStack {
-            ObjectCaptureView(session: session)
+            RealityKit.ObjectCaptureView(session: session)
 
             if viewModel.showPointCloudPreview {
-                ObjectCapturePointCloudView(session: session)
+                RealityKit.ObjectCapturePointCloudView(session: session)
                     .transition(.opacity)
             }
 

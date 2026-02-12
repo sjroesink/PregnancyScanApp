@@ -1,4 +1,5 @@
 import SceneKit
+import SceneKit.ModelIO
 import ModelIO
 import UIKit
 
@@ -25,10 +26,10 @@ final class ThumbnailService {
             (minBound.y + maxBound.y) / 2,
             (minBound.z + maxBound.z) / 2
         )
-        let maxDim = max(
-            maxBound.x - minBound.x,
-            max(maxBound.y - minBound.y, maxBound.z - minBound.z)
-        )
+        let width = maxBound.x - minBound.x
+        let height = maxBound.y - minBound.y
+        let depth = maxBound.z - minBound.z
+        let maxDim = max(width, max(height, depth))
         if maxDim > 0 {
             let scale = 2.0 / maxDim
             scene.rootNode.scale = SCNVector3(scale, scale, scale)

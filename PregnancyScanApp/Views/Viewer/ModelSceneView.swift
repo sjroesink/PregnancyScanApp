@@ -1,5 +1,6 @@
 import SwiftUI
 import SceneKit
+import SceneKit.ModelIO
 import ModelIO
 
 struct ModelSceneView: UIViewRepresentable {

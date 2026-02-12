@@ -67,6 +67,8 @@ jobs:
             -project PregnancyScanApp.xcodeproj \
             -scheme PregnancyScanApp \
             -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
             -archivePath $RUNNER_TEMP/PregnancyScanApp.xcarchive \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO
