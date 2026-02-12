@@ -12,6 +12,8 @@ jobs:
   build:
     name: Build IPA
     runs-on: macos-latest
+    permissions:
+      contents: write
     
     steps:
       - name: Checkout repository
