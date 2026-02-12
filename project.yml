@@ -45,6 +45,8 @@ targets:
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         ENABLE_PREVIEWS: "YES"
         SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD: "NO"
+        IPHONEOS_DEPLOYMENT_TARGET: "17.0"
+        SDKROOT: iphoneos
 
       configs:
         Debug:
@@ -61,6 +63,8 @@ targets:
       - sdk: ModelIO.framework
       - sdk: SceneKit.framework
       - sdk: QuickLook.framework
+      - sdk: Observation.framework
+      - sdk: SwiftData.framework
 
     entitlements:
       path: PregnancyScanApp/PregnancyScanApp.entitlements

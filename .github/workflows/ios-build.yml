@@ -39,6 +39,7 @@ jobs:
           xcodebuild -version
           xcodebuild -showsdks
           ls /Applications | grep Xcode
+          find $(xcrun --sdk iphoneos --show-sdk-path) -name "RealityKit.swiftmodule" -type d
 
       - name: Install XcodeGen
         run: brew install xcodegen
@@ -61,6 +62,7 @@ jobs:
             SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD=NO \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGN_IDENTITY="" \
+            OTHER_SWIFT_FLAGS="-DENABLE_OBJECT_CAPTURE" \
             | xcpretty
 
       - name: Package as unsigned IPA

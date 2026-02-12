@@ -20,7 +20,7 @@ enum DeviceCapabilityChecker {
         }
 
         #if ENABLE_OBJECT_CAPTURE
-        let supportsObjectCapture = ObjectCaptureSession.isSupported
+        let supportsObjectCapture = RealityKit.ObjectCaptureSession.isSupported
         #else
         let supportsObjectCapture = false
         #endif

@@ -1,8 +1,10 @@
 import RealityKit
 import ARKit
 import Combine
+import Observation
 
 #if ENABLE_OBJECT_CAPTURE
+import RealityKit
 
 @available(iOS 17.0, *)
 @Observable
@@ -39,7 +41,7 @@ final class CaptureSessionService {
 
     // MARK: - State
 
-    private(set) var objectCaptureSession: ObjectCaptureSession?
+    private(set) var objectCaptureSession: RealityKit.ObjectCaptureSession?
     private(set) var currentScanHeight: ScanHeight = .low
     private(set) var completedPasses: Set<ScanHeight> = []
     private(set) var numberOfShotsTaken: Int = 0
@@ -69,13 +71,13 @@ final class CaptureSessionService {
     // MARK: - Session Lifecycle
 
     func startSession(imagesDirectory: URL, snapshotsDirectory: URL) throws {
-        guard ObjectCaptureSession.isSupported else {
+        guard RealityKit.ObjectCaptureSession.isSupported else {
             throw CaptureError.deviceNotSupported
         }
 
-        let session = ObjectCaptureSession()
+        let session = RealityKit.ObjectCaptureSession()
 
-        var configuration = ObjectCaptureSession.Configuration()
+        var configuration = RealityKit.ObjectCaptureSession.Configuration()
         configuration.checkpointDirectory = snapshotsDirectory
         configuration.isOverCaptureEnabled = true
 
@@ -154,7 +156,7 @@ final class CaptureSessionService {
         }
     }
 
-    private func handleStateUpdate(_ state: ObjectCaptureSession.CaptureState) {
+    private func handleStateUpdate(_ state: RealityKit.ObjectCaptureSession.CaptureState) {
         switch state {
         case .ready:
             userGuidance = "Position yourself to start scanning"
@@ -174,7 +176,7 @@ final class CaptureSessionService {
         }
     }
 
-    private func handleFeedback(_ feedback: Set<ObjectCaptureSession.Feedback>) {
+    private func handleFeedback(_ feedback: Set<RealityKit.ObjectCaptureSession.Feedback>) {
         if feedback.contains(.objectTooClose) {
             userGuidance = "Move further from the subject"
         } else if feedback.contains(.objectTooFar) {

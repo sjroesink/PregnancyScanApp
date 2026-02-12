@@ -1,6 +1,7 @@
 import SwiftUI
 import SwiftData
 import RealityKit
+import Observation
 
 @available(iOS 17.0, *)
 @Observable
@@ -19,7 +20,7 @@ final class ScanSessionViewModel {
     private(set) var isCountingDown = false
 
     #if ENABLE_OBJECT_CAPTURE
-    var session: ObjectCaptureSession? { captureService.objectCaptureSession }
+    var session: RealityKit.ObjectCaptureSession? { captureService.objectCaptureSession }
     #endif
     var currentHeight: CaptureSessionService.ScanHeight { captureService.currentScanHeight }
     var completedPasses: Set<CaptureSessionService.ScanHeight> { captureService.completedPasses }
