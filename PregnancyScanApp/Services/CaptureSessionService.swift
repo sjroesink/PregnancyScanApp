@@ -146,6 +146,7 @@ final class CaptureSessionService {
             userGuidance = "Position yourself to start scanning"
         case .detecting:
             userGuidance = "Detecting subject..."
+            startCapturing()
         case .capturing:
             userGuidance = currentScanHeight.guidance
         case .finishing:

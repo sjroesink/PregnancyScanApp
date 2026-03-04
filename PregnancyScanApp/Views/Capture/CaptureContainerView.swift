@@ -173,6 +173,7 @@ struct CaptureContainerView: View {
     private func startSession() async {
         do {
             try await viewModel.startNewScan(context: modelContext)
+            viewModel.startDetecting()
         } catch {
             appState.showError("Failed to start scan: \(error.localizedDescription)")
             appState.popToRoot()
